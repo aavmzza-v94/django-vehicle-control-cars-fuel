@@ -1,317 +1,185 @@
-# 🚗 App Django - Control de Vehículos
+🚗 Django App - Vehicle Management
 
-Aplicación web desarrollada en **Django + Docker + PostgreSQL**, con autenticación mediante **OAuth2 (Google)** y gestión de:
+Web application built with Django + Docker + PostgreSQL, featuring authentication via OAuth2 (Google) and management of:
 
-* Marcas
-* Modelos
-* Vehículos
-
----
-
-# 🧱 Tecnologías utilizadas
-
-* Python 3.12
-* Django 5.x
-* PostgreSQL
-* Docker & Docker Compose
-* HTMX / AJAX
-* Bootstrap
-* django-allauth (OAuth2)
-
----
-
-# ⚙️ Levantar el proyecto
-
-## 1️⃣ Clonar repositorio
-
-```bash
+Brands
+Models
+Vehicles
+🧱 Tech Stack
+Python 3.12
+Django 5.x
+PostgreSQL
+Docker & Docker Compose
+HTMX / AJAX
+Bootstrap
+django-allauth (OAuth2)
+⚙️ Getting Started
+1️⃣ Clone the repository
 git clone <repo-url>
 cd app-django-curso-2024
-```
-
----
-
-## 2️⃣ Levantar con Docker
-
-```bash
+2️⃣ Run with Docker
 docker compose up --build
-```
 
-👉 Si ya estaba construido:
+👉 If already built:
 
-```bash
 docker compose up
-```
-
----
-
-## 3️⃣ Ejecutar migraciones
-
-```bash
+3️⃣ Apply migrations
 docker compose exec web python manage.py migrate
-```
-
----
-
-## 4️⃣ Crear superusuario
-
-```bash
+4️⃣ Create superuser
 docker compose exec web python manage.py createsuperuser
-```
+5️⃣ Access the app
+App: http://localhost:8000
+Admin: http://localhost:8000/admin
+🔐 OAuth2 Setup (Google)
+1️⃣ Create credentials
 
----
-
-## 5️⃣ Acceder a la app
-
-* App: http://localhost:8000
-* Admin: http://localhost:8000/admin
-
----
-
-# 🔐 Configuración OAuth2 (Google)
-
-## 1️⃣ Crear credenciales
-
-Ir a:
+Go to:
 
 👉 https://console.cloud.google.com/
 
-Crear:
+Create:
 
-* OAuth Client ID
-* Tipo: **Web application**
-
----
-
-## 2️⃣ Configurar URLs
-
-### Orígenes autorizados:
-
-```text
+OAuth Client ID
+Type: Web application
+2️⃣ Configure URLs
+Authorized origins:
 http://localhost:8000
-```
-
----
-
-### URI de redirección:
-
-```text
+Redirect URI:
 http://localhost:8000/accounts/google/login/callback/
-```
 
-⚠️ IMPORTANTE:
+⚠️ IMPORTANT:
 
-* Debe terminar en `/`
-* Debe ser EXACTA
+Must end with /
+Must be EXACT
+3️⃣ Configure in Django Admin
 
----
+Go to:
 
-## 3️⃣ Configurar en Django Admin
-
-Entrar a:
-
-```
 /admin/socialaccount/socialapp/
-```
 
-Agregar:
+Add:
 
-* Provider: Google
-* Client ID
-* Secret Key
-* Sites → seleccionar `localhost`
-
----
-
-## 4️⃣ settings.py
-
-```python
+Provider: Google
+Client ID
+Secret Key
+Sites → select localhost
+4️⃣ settings.py
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-```
+🧠 System Logic
+🔗 Entity relationships
+Brand → Model → Vehicle
+⚠️ Required order
+1️⃣ Create Brand
 
----
+Example:
 
-# 🧠 Lógica del sistema
+Toyota
+Ford
+2️⃣ Create Model
 
-## 🔗 Relación de entidades
+Each model belongs to a brand:
 
-```
-Marca → Modelo → Vehículo
-```
+Corolla → Toyota
+Focus → Ford
+3️⃣ Create Vehicle
 
----
+Vehicle depends on model:
 
-## ⚠️ Orden obligatorio
+Model
+License plate (register)
+Year
+Type
+Unit of measure
+💥 IMPORTANT
 
-### 1️⃣ Crear Marca
+👉 If no models exist → vehicle cannot be saved
+👉 If no brands exist → models cannot be created
 
-Ejemplo:
+👤 User Security
 
-* Toyota
-* Ford
+Each record stores:
 
----
-
-### 2️⃣ Crear Modelo
-
-Cada modelo pertenece a una marca:
-
-* Corolla → Toyota
-* Focus → Ford
-
----
-
-### 3️⃣ Crear Vehículo
-
-El vehículo depende del modelo:
-
-* Modelo
-* Registro (patente)
-* Año
-* Tipo
-* Unidad de medida
-
----
-
-## 💥 IMPORTANTE
-
-👉 Si no existen modelos → **NO se puede guardar vehículo**
-👉 Si no existen marcas → **NO se pueden crear modelos**
-
----
-
-# 👤 Seguridad por usuario
-
-Cada registro guarda:
-
-```text
-uc → usuario creador
-um → usuario modificador
-```
-
----
-
-## 🔐 Filtro de datos
-
-```python
+uc → created by user
+um → updated by user
+🔐 Data filtering
 if request.user.is_superuser:
-    registros = Vehiculo.objects.all()
+    records = Vehiculo.objects.all()
 else:
-    registros = Vehiculo.objects.filter(uc=request.user)
-```
+    records = Vehiculo.objects.filter(uc=request.user)
 
----
+👉 Result:
 
-👉 Resultado:
-
-* Superuser → ve todo
-* Usuario normal → solo sus registros
-
----
-
-# 📊 DataTables (server-side)
+Superuser → sees everything
+Regular user → sees only their own records
+📊 DataTables (server-side)
 
 Endpoint:
 
-```text
 /control/vehicles/dt
-```
 
-Funcionalidades:
+Features:
 
-* Paginación
-* Búsqueda
-* Filtros
+Pagination
+Search
+Filtering
+🧩 Modals (UX)
 
----
+Operations are handled through modals:
 
-# 🧩 Modales (UX)
+Create
+Edit
+Delete
 
-Las operaciones se hacen mediante modales:
+⚠️ Important:
 
-* Crear
-* Editar
-* Eliminar
-
----
-
-⚠️ Importante:
-
-```text
 /control/vehicles/new
-```
 
-👉 NO debe abrirse directamente
-👉 Solo mediante botón (AJAX / HTMX)
+👉 Should NOT be accessed directly
+👉 Only via button (AJAX / HTMX)
 
----
+🐛 Common Issues
+❌ Vehicle not saving
 
-# 🐛 Problemas comunes
+✔ Check:
 
-## ❌ No guarda vehículo
+Brands exist
+Models exist
+Model is selected
+❌ Empty table
 
-✔ Verificar:
+✔ Check:
 
-* Existen marcas
-* Existen modelos
-* Se seleccionó modelo
+User is logged in
+uc filtering
+Not using a different user
+❌ OAuth not working
 
----
+✔ Check:
 
-## ❌ Tabla vacía
+Exact redirect URI
+Correct Client ID
+Site configured in admin
+❌ Docker without internet (WSL)
 
-✔ Verificar:
+Edit:
 
-* Usuario logueado
-* Filtro por `uc`
-* No estar con otro usuario
-
----
-
-## ❌ OAuth no funciona
-
-✔ Revisar:
-
-* Redirect URI exacta
-* Client ID correcto
-* Site configurado en admin
-
----
-
-## ❌ Docker sin internet (WSL)
-
-Editar:
-
-```bash
 sudo nano /etc/resolv.conf
-```
 
-Agregar:
+Add:
 
-```text
 nameserver 8.8.8.8
 nameserver 1.1.1.1
-```
+🚀 Future Improvements
+Full HTMX integration (no page reloads)
+Auto-refresh DataTable
+Dynamic Brand → Model filtering
+Live validations
+UI improvements
+👨‍💻 Author
 
----
-
-# 🚀 Mejoras futuras
-
-* HTMX completo (sin recarga)
-* Refresh automático de tabla
-* Filtro dinámico Marca → Modelo
-* Validaciones en vivo
-* UI mejorada
-
----
-
-# 👨‍💻 Autor
-
-Proyecto de práctica avanzada con Django + Docker + OAuth2.
-
----
+Practice project built with Django + Docker + OAuth2.

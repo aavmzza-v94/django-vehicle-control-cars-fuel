@@ -1,0 +1,25 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA Y TRANSFIERE DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+<form action="" method="post">
+    {% csrf_token %}
+
+{% include "fragments/titulo.html" with titulo="Borrar"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Borrar" %} <!-- pasar eso a start por variable header-->
+    <!--TEXTO PARA PREGUNTAR CUANDO ELIMINAMOS ALGO...-->
+    ¿Eliminar {{obj}}? <!--PASAR EL OBJETO A SELECCIONAR... indicacion..-->
+    <button type="submit" class="btn btn-danger"><i class="far fa-question-circle">Si, Eliminar</i></button>
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-success"> <!--REGRESA A LA RUTA ANTERIOR... al cancelar el borrado...-->
+        <span class="fa fa-undo"></span>No, Cancelar
+    </a> 
+    <!--EN CASO DE CANCELAR CON HIPERLINK REGRESAR A LA PAGINA ANTERIOR POR PROP DJANGO... el span es para separar y un icono-->
+
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+</form> <!--FINAL DEL FORMULARIO...-->
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+{% endblock %}

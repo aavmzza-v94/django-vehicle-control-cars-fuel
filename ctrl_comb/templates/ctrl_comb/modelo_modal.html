@@ -1,0 +1,24 @@
+<!-- <div class="modal">  ESTA PLANTILLA NO HEREDA DE OTRA PLANTILLA... LUEGO ESTO CARGAR PARA EL EDIT... REEMPLAZAR... QUEDA MEJOR EN VEZ DEL GOOGLE ALERT...-->
+{% load crispy_forms_tags %} <!--CARGAR FORMULARIO CRISPY...-->
+    <div class="modal-dialog" role="document">
+      <div class="modal-content"> <!-- EN ACTION ABAJO PINTAR LA URL modelo new y edit... ... con request.path-->
+        <form action="{{ request.path }}" method="POST"> <!-- INSERTAR EL FORMULARIO PARA PODER COMPLETAR DESDE LA VENTANA SIN NECESIDAD DE IR A OTRA RUTA.. CERRAR ABAJO-->
+            {% csrf_token %} <!--TOKEN DE SEGURIDAD... LOGEAR PARA CUALQUIER FORMULARIO ES NECESARIO PONER-->
+        <div class="modal-header">
+          <h5 class="modal-title">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body"> <!-- CONTENIDO DEL CUERPO DE MODAL... PINTAR... FORMULARIO-->
+            {{ form|crispy }} <!-- formulario con filtro crispy... VER BOTONES...-->
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-stop-circle"></i>Guardar</button> <!-- boton de submit y danger de bootstrap y pequenho-->
+            <!-- <a href="{% url 'control:modelo_list' %}"><i class="bi bi-x-octagon-fill"></i>Cancelar</a> --> <!--- boton Cancelar ... hiperlink redireccionar a lista-->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button> <!--CIERRE DE MODAL...-->
+        </div>
+        </form>
+      </div>
+    </div>
+<!--  </div> -->

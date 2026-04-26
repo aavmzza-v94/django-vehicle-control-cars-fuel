@@ -1,0 +1,55 @@
+version: '3.10'
+services: # servicios web...
+  web:
+    build: . # construccion de forma local...
+    ports:   # asignacion de puertos...
+      - "8000:8000" # acceder de la maquina externa instalada por el puerto 8000 volcarlo por nuestro puerto 8000...
+    command: python manage.py runserver 0.0.0.0:8000
+    # volumenes para cambio de datos en docker compose y guardar la app completa...
+    volumes: # contenedor cualquier cambio se reflejara en el container... la imagen...
+      - .:/code
+    depends_on: # se levante el contenedor web... garantia
+      db: 
+        condition: service_healthy # el servidor esta saludable... la dependencia se cumple y arranca el server
+    restart: always
+    networks:
+      - webnet # se configura el DNS para acceso a google.. OJASO! EN MI CASO POR MI WIFI SI... sino no hace falta...
+
+  
+  db: # saludable cuando nos indica que la base de datos esta en arranque y lista para el contenedor web..
+    image: postgres:16 # version...
+    volumes:
+      - ../data:/var/lib/postgresql/data/ # para acceder desde el host a la base de datos debemos exportar el puerto...
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=dj_ctl_comb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] # si devuelve true se levanto el servicio...
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      #start_period: 30s
+    networks:
+     - webnet # PARA LA IP Y DNS DE GOOGLE DEJAR FUNCIONAR... SI NO TIENE NADA NO ES NECESARIO AGREGAR...
+
+  nginx:
+    image: nginx
+    ports:
+      - "8080:8080" # puerto, en 8080 recien me permitio... en 80 NO!
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro # crear el volumen en el puerto 80 dentro del contenedor el file no se modifique
+      # indica el directorio proxy que hemos creado en la ruta app/proxy...
+    depends_on: # se levante el contenedor web... garantia
+      - web
+    networks:
+      - webnet # PARA LA IP Y DNS DE GOOGLE DEJAR FUNCIONAR... SI NO TIENE NADA NO ES NECESARIO AGREGAR... docker compose PRODUCCION
+     # DE NGINX
+
+
+volumes: # instanciar el volumen de la base de datos... directamente..
+  pg_data:
+
+networks:
+  webnet:

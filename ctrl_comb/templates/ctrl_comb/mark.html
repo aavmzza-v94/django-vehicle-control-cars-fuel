@@ -1,0 +1,46 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA Y TRANSFIERE DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% load static %} <!-- cargar archivos estaticos como css o javascript.. -->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Marca Vehiculo"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="" %} <!-- pasar eso a start por variable header-->
+      <div class="row"> <!-- CREAMOS UNA FILA Y EN ESA FILA HABRAN DOS COLUMNAS de 6 y 6 Y OCUPARA LA MITAD DE LA PANTALLA.. cada una por eso 6... por bootstrap que usa una grilla de 12 columnas la pantalla...-->
+        <div class="col-md-6">
+            <div id="frm"> <!-- con id y poner plantilla para el formulario... -->
+                {% include 'ctrl_comb/mark-frm.html' %} <!-- UTILIZAREMOS CONTENIDO DE mark-frm.html... OJO OTRO FORMULARIO HTML...-->
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="list"> <!-- LO MISMO PARA LIST...-->
+                {% include 'ctrl_comb/mark-list.html' %}
+            </div>
+        </div>
+      </div>
+    
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+{% endblock %}
+
+{% block js %}  <!-- no se puede poner en mark list porque se tapa por el bloque anterior... 1 bloque nomas puede haber... aca include nomas-->
+<!-- emplear datatable ...
+<script> 
+$(document).ready(function(){
+    $('#tbl').DataTable({ // el tbl es para la lista extraer y configurar datatable en mark-list.html... por id
+        language:{
+            url: "{% static 'plugins/datatable/es.json' %}"
+        },
+        "paging": true,
+        "searching": true,
+        "ordering": true, // para la paginacion.... datatables... ajax.. javascript
+        "info": true
+    });
+});
+</script> -->
+{% endblock %}

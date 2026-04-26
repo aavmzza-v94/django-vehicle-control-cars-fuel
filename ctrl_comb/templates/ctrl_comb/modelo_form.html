@@ -1,0 +1,38 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA Y TRANSFIERE DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% load crispy_forms_tags %} <!--CARGAR FORMULARIO CRISPY...-->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Modelos Vehiculo"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Agregar/Editar Modelos de Vehiculos" %} <!-- pasar eso a start por variable header-->
+    <!-- NO TENDREMOS AQUI TABLA... SINO UN FORMULARIO-->
+
+
+
+
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+    <form action="" method="post">
+        {% csrf_token %} <!--TOKEN DE SEGURIDAD... LOGEAR-->
+        {{ form|crispy }} <!-- formulario con filtro crispy...-->
+        <div class="row"> <!--AGREGAR UNA FILA...-->
+            <div class="col md-6"> <!-- AGARRAR MITAD DE PANTALLA DE BOOTSTRAP..-->
+                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-stop-circle"></i>Guardar</button> <!-- boton de submit y danger de bootstrap y pequenho-->
+                <a href="{% url 'control:modelo_list' %}"><i class="bi bi-x-octagon-fill"></i>Cancelar</a> <!--- boton Cancelar ... hiperlink redireccionar a lista-->
+            </div> 
+        </div>
+    </form>
+
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+{% endblock %}
+
+{% block js %}  <!-- no se puede poner en mark list porque se tapa por el bloque anterior... 1 bloque nomas puede haber... aca include nomas-->
+<!-- emplear datatable.. ACA NO REINICIALIZAREMOS LA TABLA.. ...-->
+
+
+{% endblock %}

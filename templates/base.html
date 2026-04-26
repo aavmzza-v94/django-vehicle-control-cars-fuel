@@ -1,0 +1,111 @@
+{% load static %} <!-- cargar archivos estaticos como css o javascript.. -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Control de Combustible {% endblock %}</title> <!-- nombre en la pestanha... -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> <!-- CDN PARA ICONOS BOOTSTRAP-->
+    <link rel="stylesheet" href="{% static 'css/bootstrap_sketchy.min.css' %}">
+
+    <!--DATATABLES...-->
+    <link rel="stylesheet" href="{% static 'plugins/datatable/datatables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/datatable/Responsive-2.5.0/css/responsive.bootstrap5.min.css' %}">
+    <!-- estilo de hoja href apunta al archivo... -->
+
+    <!--Select2 PLUGIN PARA BUSQUEDA MAS VISTOSA...-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!--SELECT2 PLUGIN BOOTSTRAP...-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+</head>
+
+<body id="body" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'> <!-- NO OLVIDAR COLOCAR EL TOKEN DE SEGURIDAD.. EN PLANTILLA BASE-->
+    <!-- MENU -->
+    {% include "fragments/menu.html" %}  <!-- PARA REDIRIGIR AL MENU.HTML Y RECARGAR COMO HERENCIA... ahi desplazamos todo el menu... -->
+    <!-- FIN MENU -->
+    <div class="row">
+        <container-sm>
+            {% block contenido %} <!-- DAR FORMATO AL BLOQUE CONTENIDO... eso se ve en home y demas... ESTE SERIA LA BASE DE FONDO-->
+            {% endblock %}
+        </container-sm>
+    </div>
+
+    <div id="popup" class="modal fade"></div>
+
+<!-- AQUI SE CARGA TODO DE STATIC LA CARPETA... OJO!!!-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>  <!-- jquery para que no de error bootstrap y abajo popper-->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!--<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script> -->
+    
+    <script src="{% static 'js/htmx.js' %}"></script> <!-- CARGAR DE LA CARPETA LA LIBRERIA QUE YA DEFINIMOS... HTMX... -->
+
+    <!--DATATABLES...-->
+    <script src="{% static 'plugins/datatable/datatables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatable/Buttons-2.4.2/js/buttons.bootstrap5.min.js' %}"></script>
+
+    <!--SWEETALERT-->
+    <script src="{% static 'js/sweetalert.js' %}"></script>
+
+    <!--CHAINED NO OLVIDAR PARA BASE EXTENDS... DESPLIEGUE DE MODELOS...-->
+    <script src="{% static 'js/jquery.chained.min.js' %}"></script>
+
+    <!-- Select2 el js al principio se coloca el css.. -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        function abrir_modal(url){ // inyecta en url el contenido html y devuelve django una plantilla en la ventana
+            $("#popup").load(url,function(){ // id popup...
+                $(this).modal({
+                    backdrop:"static", // para que no se cierre estatico
+                    keyboard:false // tambien para que no se cierre y estatico...
+                })     // this significa seleccionar la funcion o ventana
+                $(this).modal('show') // pasar parametro para que muestre... ajax ABRIR VENTANA MODAL
+            })
+        }
+        function cerrar_modal(){ // para CERRAR VENTANA MODAL...
+            $("#popup").modal("Hide") // ocultar hide.. ventana
+            return false; // retorno.. LUEGO ESCRIBIR PLANTILLA PARA MODELO DE VEHICULO..
+        }
+    </script>
+
+    <script> // capturar los valores para inicializar el datatable..  PRIMERO EL ID DE LA TABLA... tbl en este caso
+        var tblName = "{% block dtName %}#tbl{% endblock %}" //  crear un bloque... ENTRE COMILLAS SIEMPRE... entre esos poner inicializacion
+        var dtColumns = [{% block dtColumns %}{% endblock %} // CONCATENA 2 BLOQUES, bloque pasar definicion de las columnas... extra, 
+           {% block dtColumnsActions %} // BLOQUE DEFINICION DE LOS BOTONES DE ACCION DENTRO DEL ARREGLO.. VALORES POR DEFAULT... en datatable.html null
+           ,{ data: null,
+                className: "dt-center editor-edit text-success", // success es color verde... 
+                defaultContent: '<i class="bi bi-pencil-square"></i>', // 3er columna, lapicito para editar columna, bootstrap icons... si no toma comillas dobles, usar simples
+                orderable: false // que no se ordene la columna...
+            },
+            { data: null, // 4ta columna para editar tambien pero en este caso borrar el registro...
+                className: "dt-center editor-delete text-danger", // success es color verde... 
+                defaultContent: '<i class="bi bi-trash3"></i>', // 3er columna, lapicito para editar columna, bootstrap icons... si no toma comillas dobles, usar simples
+                orderable: false // que no se ordene la columna...
+            }
+           {% endblock %}]  // las columnas es un arreglo en datatable.html para mandar definicion de columnas.. el bloque
+            var tblUrl = "{% block dtUrl %}/{% endblock %}"  // BLOQUE para invocar la ruta del datatable... bloque, por default es / el home...
+            var dtUrlEdit = "{% block dtUrlEdit %}/{% endblock %}" // AGREGA LA URL EL CONTENIDO EN MEDIO DEL BLOQUE... / ES EL ADICIONAL
+            // funciona igual que el dtUrl, tenemos la url con que vamos a editar
+            var urlDelete = "{% block dtUrlDelete %}/{% endblock %}" // ACA VA A DATATABLE... PASA A BORRAR() Y LUEGO SE EJECUTA EN JS
+            var descDelete = "{% block dtDescDelete %}descript,{% endblock %}" //  descript, cadena de texto con coma... separa con campos por coma... por defautl... split... 
+            //descripcion de lo que se quiere borrar EN VENTANA... AL CLICKEAR EN EL TRASH O BASURA..
+
+
+    </script>
+
+    {% include "fragments/datatable.html" %} <!-- PARA CARGAR EL ESTATICO... DE DATATABLE...-->
+
+
+    {% block js %}
+
+    {% endblock %}
+
+</body>
+
+</html>
+

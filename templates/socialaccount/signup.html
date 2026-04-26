@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block contenido %}
+
+{% include "fragments/titulo.html" with titulo="Completar registro" %}
+
+{% include "fragments/card_start.html" with header="Finalizar registro con Google" %}
+
+<p class="text-muted">
+    Estás a un paso de completar tu registro.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <button class="btn btn-success mt-2" type="submit">
+        Registrarse
+    </button>
+</form>
+
+{% include "fragments/card_finish.html" %}
+
+{% endblock %}

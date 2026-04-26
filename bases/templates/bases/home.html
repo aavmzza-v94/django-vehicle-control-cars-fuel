@@ -1,0 +1,43 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA Y TRANSFIERE DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Inicio"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Bienvenidos a la Aplicacion" %} <!-- pasar eso a start por variable header-->
+      <h4 class="card-title">{% if user.is_authenticated %} Hola {{user.email}} {% else %}
+        <a href="{% url 'usuarios:login' %}">Login</a> {% endif %} <!--SINO CARGA A LOGEARSE...-->
+      </h4> <!-- verificar si el user esta autenticado, si lo esta imprime el email...-->
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <!-- <iframe  src="http://localhost:1880/dashboard/page1" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe> -->
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+
+  <!-- <div class="video-container mt-3">  
+    <img src="{#% url 'core:video_feed' %#}" class="video-stream" alt="Transmisión de Video">
+  </div> se comenta la herencia con ## no olvidar por mas que este comentado sino no cargaara la pagina ctrl+c+k y ctrl+k+u -->
+
+
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+    <!-- Estilos CSS específicos para esta página
+      <style>
+        .video-container {
+            width: 100%;
+            height: auto;
+            max-width: 640px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .video-stream {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 2px solid #ccc; /* Opcional: borde alrededor del video */
+        }
+      </style> -->
+
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+{% endblock %}

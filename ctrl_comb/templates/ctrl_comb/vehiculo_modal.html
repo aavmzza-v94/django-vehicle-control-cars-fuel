@@ -1,0 +1,81 @@
+<!-- <div class="modal">  ESTA PLANTILLA NO HEREDA DE OTRA PLANTILLA... LUEGO ESTO CARGAR PARA EL EDIT... REEMPLAZAR... QUEDA MEJOR EN VEZ DEL GOOGLE ALERT...-->
+{% load crispy_forms_tags %} <!--CARGAR FORMULARIO CRISPY...-->
+    <div class="modal-dialog modal-fullscreen" role="document"> <!-- fullscreen por bootstrap...-->
+      <div class="modal-content"> <!-- EN ACTION ABAJO PINTAR LA URL modelo new y edit... ... con request.path-->
+        <form action="{{ request.path }}" method="POST"> <!-- INSERTAR EL FORMULARIO PARA PODER COMPLETAR DESDE LA VENTANA SIN NECESIDAD DE IR A OTRA RUTA.. CERRAR ABAJO-->
+            {% csrf_token %} <!--TOKEN DE SEGURIDAD... LOGEAR PARA CUALQUIER FORMULARIO ES NECESARIO PONER-->
+        <div class="modal-header">
+          <h5 class="modal-title">{% if obj %}Editar{% else %}Nuevo{% endif %} Vehiculo</h5> <!-- CUANDO HAY % SOLO SE PONE 1 LLAVE 
+          NO DOS... SINO DA ERROR... esto dira depende del objeto editar o nuevo... si existe o no-->
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body"> <!-- CONTENIDO DEL CUERPO DE MODAL... PINTAR... FORMULARIO-->
+            {#{ form|crispy }#} <!-- formulario con filtro crispy... VER BOTONES... COMENTADO..,-->
+            <div class="row"> <!-- 2 filas de 2 columnas... grilla de 2x2 -->
+              <div class="col-6">
+                <select name="mark" id="id_mark" class="select form-select"> <!-- campo.. de marca..-->
+                  <option value="">Seleccione Marca</option> <!-- PARA SELECCIONAR LA MARCA Y DESPLIEGUE.. LUEGO RECORRER TODAS LAS MARCAS-->
+                    {% for o in marcas %} <!-- CICLO FOR PARA MOSTRAR LAS MARCAS....-->
+                      <option value="{{o.id}}">{{o.descript}}</option> <!-- QUE MUESTRE despliegue EL OBJETO ID PAR MARCAS... DE VIEWS Y DESCRIPT...-->
+                    {% endfor %}
+                </select>
+              </div> <!-- 6 por mitaad... bootstrap que muestre nro de placa.. con filtro de crispy form con |-->
+              <div class="col-6"> <!-- AHORA LOS MODELOS....-->
+                <select name="modelo" id="id_modelo" class="select form-select"> <!-- campo.. de marca..-->
+                  <option value="">Seleccione Modelo</option> <!-- PARA SELECCIONAR LA MARCA Y DESPLIEGUE.. LUEGO RECORRER TODAS LAS MARCAS-->
+                    {% for o in modelos %} <!-- CICLO FOR PARA MOSTRAR LAS MARCAS....-->
+                      <option value="{{o.id}}" data-chained="{{o.mark.id}}">{{o.descript}}</option> <!-- QUE MUESTRE despliegue EL OBJETO ID PAR MARCAS... DE VIEWS Y DESCRIPT...-->
+                    <!-- NO OLVIDAR DESCARGAR LA LIBRERIA AGREGAR MODAL, LIBRERIA EN BASE.HTML...-->
+                    {% endfor %}
+                </select>
+              </div> <!-- PARA ENTER LOS DATOS....-->
+            </div>
+            <div class="row">
+              <div class="col-6">{{form.register|as_crispy_field}}</div> <!-- 2 filas de 2 columnas... grilla de 2x2 -->
+              <div class="col-6">{{form.year|as_crispy_field}}</div> <!-- ANHO.. VEHICULO RENDERIZAR LUEGO MANUALMENTE-->
+            </div>
+            <div class="row">
+              <div class="col-6">{{form.tipo|as_crispy_field}}</div> <!-- para la columna tipo y unidad de medida de vehiculo-->
+              <div class="col-6">{{form.unidad_medida|as_crispy_field}}</div> <!-- IR A LA SECCION DE SCRIPT EN CONTEXT AGREGAR VALORES..-->
+            </div> 
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-stop-circle"></i>Guardar</button> <!-- boton de submit y danger de bootstrap y pequenho-->
+            <!-- <a href="{% url 'control:modelo_list' %}"><i class="bi bi-x-octagon-fill"></i>Cancelar</a> --> <!--- boton Cancelar ... hiperlink redireccionar a lista-->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><i class="bi bi-x-octagon-fill"></i>Cancelar</a> 
+          <!--CIERRE DE MODAL...-->
+        </div>
+        </form>
+      </div>
+    </div>
+<!--  </div> -->
+
+<!--VINCULAR con CHAINED EL ENCADENAMIENTO... -->
+
+<script>
+  $(function(){
+
+      {% if obj %}
+      $("#id_mark").val("{{obj.modelo.mark.id}}").trigger('change') // extraer los select por el id... poner el valor de donde viene... llegar al valor de marca...
+      $("#id_modelo").val("{{obj.modelo.id}}").trigger('change') // para modelo... PARA QUE APAREZCA NOMAS DE ENTRADA LOS NOMBRES SIN SELECCIONAR UNA MARCA
+      
+      
+      $("#tipo").val("{{obj.tipo}}") // extrae de form.... el #tipo...
+      $("#unidad_medida").val("{{obj.unidad_medida}}")
+      
+      // MACANADA ES
+      {% endif %}
+
+    // inicializar el select2... antes...
+    $(".form-select").select2(
+    { // no olvidar las llaves
+      theme: 'bootstrap-5'
+    } 
+    ); // colocar tema creando un json y se pone propiedad tema...
+
+    $("#id_modelo").chained("#id_mark"); /*  EL ID ESTA EN LA COLUMNA MARCA Y MODELO... MARCA DEPENDE DE MODELO... or $("#series").chainedTo("#mark"); */
+
+  })
+</script>

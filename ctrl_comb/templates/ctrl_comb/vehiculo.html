@@ -1,0 +1,64 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA Y TRANSFIERE DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Vehiculo"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Listado de Vehiculos" %} <!-- pasar eso a start por variable header-->
+    <!--VER PARA USAR LAS EXTENSIONES DE DATATABLE... DE BUTTONS... usar por mientras hiperlink a-->
+    <button type="button" class="btn btn-success btn-sm" onclick="abrir_modal('{% url 'control:vehiculo_new' %}')"> <!-- el o.id no existe por el pk ausente en urls.py invocar el objeto id... borrar al clickear-->
+        <i class="bi bi-pencil-square"></i> <!--icono del boton para lapiz... ACCION 1 EDIT-->
+    </button> 
+    <!--el bi es icono de bootstrap...-->
+    <table id="tbl" class="table table-striped table-hover">  <!-- CABECERA CON ID TBL... FILA-->
+        <thead>
+            <tr>
+                <!-- <th></th>  VACIA DONDE ESTEN LAS ACCIONES..-->
+                <th>Marca</th> 
+                <th>Modelo</th>
+                <th>Registro</th> <!--PATENTE-->
+                <th>Año</th>
+                <th></th> <!--BOTON PARA EDITAR-->
+                <th></th> <!-- BOTON PARA BORRAR...-->
+            </tr>
+        </thead>
+        <tbody> <!-- en el cuerpo... definir obj para recorrer datos-->
+
+        </tbody>
+    </table>
+
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+ {% endblock %} 
+
+{% block js %}  <!-- no se puede poner en mark list porque se tapa por el bloque anterior... 1 bloque nomas puede haber... aca include nomas-->
+<!-- emplear datatable ... SE MOVIO TODO EL SCRIPT A DATATABLE.HTML-->
+
+{% endblock %}
+<!-- tbl tiene que coincidir con table id=tbl... sino no cargara!-->
+{% block dtName %}#tbl{% endblock %} <!-- DEFINIR ID DE TABLA por plantilla base o base.html se inicializa en el script de tbl... entre bloques #tbl
+LOS BLOQUES ESTOS LO QUE HACEN ES EXTRAER DE BASE.HTML O DE OTRAS PLANTILLAS EL SCRIPT O FRAGMENTO DE CODIGO Y LO SUMA ACA ESO NOMAS
+SI SE INSPECCIONA EL CODIGO FUENTE SE NOTARA! POR HERENCIA... -->
+
+<!-- DEFINIR COLUMNAS ACA VOLCAR EL CODIGO ACA DE DTCOLUMNS.... ESTO SIRVE PARA PARAMETRIZAR MODELOS...-->
+{% block dtColumns %}{ data:"mark"},{ data:"modelo"},{ data:"register"},{ data:"year"}{% endblock %} 
+<!-- NUNCAAA OJO!! PERO JAMAS DE LOS JAMASES COMENTAR DENTRO DEL BLOCK DT DONDE SE QUIERE PASAR DATOS... SINO DARA ERROR!!!-->
+
+
+<!-- de datatable.html definido, se extrae de views en ctrlcomb
+ que coincida con los th!!!-->
+<!-- MAS ARRIBA EN EL UTLIMO JS... SE EMPLEA tbl... POR ESO SE VUELCA ACA LOS JS Y AJAX QUE DEFINIMOS DE tbl....-->
+<!--SUPER IMPORTANTE QUE CONINCIDA CON LAS COLUMNAS EN EL HTML Y QUE SE ESTAN DECLARANDO SINO NO CARGARA... CANTIDAD DE COL..-->
+
+
+<!--DEFINIR LOS BLOQUES PARA LA URL... de base.html extraemos con datatable... EXPANDE.. por la ruta modelo_dt y extrae el tblUrl-->
+{% block dtUrl %}{% url 'control:vehiculo_dt' %}{% endblock %} <!--  DEFINIR LA URL... no olvidar sacar las comillas... 
+ir a vistas para cargar vehiculo_dt en ctrl_comb-->
+{% block dtUrlEdit %}/control/vehicles/modal{% endblock %} <!-- MODAL.. DE URLS para la edicion en el simbol en la tabla del lapicito-->
+{% block dtUrlDelete %}{% url 'control:vehiculo_list' %}delete/{% endblock %} <!-- PASAR A DELETE.. LA URL... control/models/delete-->
+{% block dtDescDelete %}mark,modelo,register,year{% endblock %} <!-- PASAR A DESCRIPCION DELETE.. LA URL... el objeto MARCA, MODEL A BORRAR...-->
+<!-- LO DESCOMPONE POR ARREGLO CREADO EN DATATABLE.HTML-->

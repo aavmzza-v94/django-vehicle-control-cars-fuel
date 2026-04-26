@@ -1,0 +1,126 @@
+{% load static %} <!-- cargar archivos estaticos como css o javascript.. PARA QUE NOS PERMITA USAR GENERICAMENTE... -->
+
+<script> 
+    // OJO ESTO SE DEBE GLOBALIZAR... LAS COLUMNAS Y DATATABLE FUNCIONAN SOLO CON ESTE MODELO...
+    var tbl; // variable de tbl... para inicializar que se guarde todo el Datatable... a nivel global, AGREGAR EN JS DE modelo..
+    //var tblName;
+;
+    $(function(){ // PARA QUE SEA GLOBAL EL TEMA DE LA PAGINACION... INICIA DATATABLE ABAJO.. capturar la inicializacion
+        tbl = $(tblName).DataTable({ // se agrega tblName para luego cargar DE Base.html ESTA POR DEBAJO... el tbl es para la lista extraer y todas las tablas que queremos formatear seran paginadas por tbl
+            language:{
+                url: "{% static 'plugins/datatable/es.json' %}"
+            },
+            ajax:{ // agregar ajax con url..
+                url: tblUrl,  // tblUrl es la de base.html... de los bloques "{% url 'control:modelo_dt' %}" pasar a modelo.html 
+                dataSrc: "datos" // invoca a datos...
+            },
+            columns: dtColumns, // se extrae de base.html...
+            dom: 'Bfrtip', // donde queremos el dom.. donde estaran los botones... estaran en parte de arriba
+            processing:true,serverSide:true,pageLength:15, // activar el server side... elementos por pagina 15, LUEGO CAMBIAR DECLARARION DE TABLA... EN MODELO
+            /*"paging": true,
+            "searching": true,
+            "ordering": true, // para la paginacion.... datatables... ajax.. javascript
+            "info": true*/
+        })
+    })
+
+    function borrar(id,d,url) // id y descripcion... y url a borrar
+    {
+        Swal.fire({
+        title: "Procedo?",
+        text: `Procedes a Eliminar ${d} ?`, // descripcion por template string comillas invertidas en ajax...
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+        if (result.isConfirmed) {
+            // USAR JQUERY PARA HACER LA INVOCACION... AJAX... AJAX PETICIONES ASINCRONAS HTTP
+            url = `${url}${id}` // ACA CARGAMOS DE BASE.HTML Y COMPLETAMOS CON VARIABLES LA URL... a borrar. no declarar var sino ERROR
+
+            // `{% url 'control:modelo_list' %}delete/${id}` ESTO PASAR A MODELO.HTML BLOQUE... antes template string literal... usar variables y textos para ir concatenandos.... ALT+96.. comillas invertidas
+            $.ajax({
+                headers:{"X-CSRFToken":"{{ csrf_token }}"}, // token de seguridad primer peticion solo 1 llave.. al inicio..
+                type: "POST", // peticion post... tipo de peticion
+                url:url, // url que ya la tenemos
+                success: function(r,textStatus,xhr){ // si es satisfactoria entonces tenemos una funcion...
+                    if(xhr.status == 200){ // mensaje OK imagen success
+                        Swal.fire('Borrado',`${d} Borrado satisfactoriamente`,'success').then( // de ser asi ejecutar en then una func
+                            function(){
+                                // location.reload() // RECARGAR LA PAGINA... al borrar...
+                                tbl.ajax.reload() // que solo cargue la tabla... OJO CAMBIAR... NO LA PAGINA... EL EVENTO AJAX
+                            }
+                        ) 
+                    }
+                    
+                },
+                error: function(jqXHR,textStatus,error){ // ver el tema de jqXHR... COMO CONECTA CON SWEETALERT...
+                    Swal.fire("Error",textStatus,"error") // mensaje "error" es por sweetalert... ver bien eso.. ahh es por swal...
+                }
+            })
+            
+            /*Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+            });*/
+        }
+        })
+    }
+
+    $("#tbl").on("click","td.editor-delete",function(e){  // OJASO! TIENE QUE COINCIDIR CON DATATABLE.HTML... SINO NO BORRA, click nomas.. NO onclick!!!
+        e.preventDefault() // detener accion
+        var rows = tbl.rows(this).data() // devuelva la fila donde de click en la fila... pasamos un numero e donde se dio el click
+         console.log(rows) // prueba... se toma el objeto id del elemento a borrar por consola se puede ver...
+        var row = rows[0] // el objeto tiene id, objeto con los datos... marca y descript...
+        // console.log(row.id) // esto es para ver las acciones en botones por consola F12...
+        var id = row.id // ahora tomamos de la columna el id seleccionado.. por click... para borrar
+        //var d = row.descript // para la DESCRIPCION... solo tomamos de la fila... aparece en ventana Borrar modelo? Borrar Celerio? Ejemplo
+        var d = "" // variable descripcion para recargar de base.html... descDelete
+        descDelete.split(",").forEach(e => { // aca inicializamos un array o vector con foreach o para cada elemento...
+            // VECTORIZAMOS LAS DESCRIPCIONES SELECCIONADAS PARA BORRAR, SEPARAMOS LOS CAMPOS MARCAS, MODELO E ID.. Y ALMACENAMOS
+            // split para separar comillas... y unificar marca y modelo o los campos... al PREGUNTAR EN VENTANA... sweetalert
+            if(row.hasOwnProperty(e)){ // preguntar si un objeto tiene una propiedad... pasamos la propiedad e.. o array..  
+                // si ese elemento coincide con el objeto... le agregamos el contenido de e... SI e existe en row!!! ESO NOMAS ES!
+               if(d.length > 0){
+                d += " " // separar los campos con espaciado antes de agregar el sgte, por eso d>0 se pregunta
+               }
+               
+                d += row[e] // objeto row y propiedad e... que se anexe...
+
+            }
+            
+        });
+        
+        borrar(id,d,urlDelete) // para la funcion definida...
+
+    })  // selector con jquery... de tbl.. id de la tabla, 
+    // columna donde la clase es edit-delete 
+    // onclick se adjunte evento o capturar de la pagina dentro de tabla
+
+    // LUEGO TRABAJAR CON EL EDIT...
+    
+    $("#tbl").on("click","td.editor-edit",function(e){  // CAMBIAR A EDIT.. OJASO! TIENE QUE COINCIDIR CON DATATABLE.HTML... SINO NO BORRA, click nomas.. NO onclick!!!
+        e.preventDefault() // detener accion
+        var rows = tbl.rows(this).data() // devuelva la fila donde de click en la fila... pasamos un numero e donde se dio el click
+         console.log(rows) // prueba... se toma el objeto id del elemento a borrar por consola se puede ver...
+        var row = rows[0] // el objeto tiene id, objeto con los datos... marca y descript...
+        // console.log(row.id) // esto es para ver las acciones en botones por consola F12...
+        var id = row.id // ahora tomamos de la columna el id seleccionado.. por click... para editar
+        // la descripcion no es necesario..
+
+        // ACA PONER LA URL DE LA PLANTILLA BASE... NO PRECISA LA VARIABLE URL...
+        // precisamos pasar /control/models/modal/  sin el id, porque lo determinamos con el click que se hace..
+        var url = `${dtUrlEdit}/${id}` // cargar de base.html... con el id... ARMADO DE URL...
+
+        // var url =`/control/models/modal/${id}` // PASAR A modelo.HTML alt 96 para la ruta... pasar el id... models... OJO NO modelos...
+        // alert(url) // para prueba y ver que corra...
+        abrir_modal(url) // abrir modal de url... sweetalert..
+
+    })  // selector con jquery... de tbl.. id de la tabla, 
+    // columna donde la clase es editor-edit 
+    // click se adjunte evento o capturar de la pagina dentro de tabla
+
+
+</script>

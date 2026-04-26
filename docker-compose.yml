@@ -1,0 +1,46 @@
+version: '3.10'
+services: # servicios web...
+  web:
+    build: . # construccion de forma local...
+    ports:   # asignacion de puertos...
+      - "8000:8000" # acceder de la maquina externa instalada por el puerto 8000 volcarlo por nuestro puerto 8000...
+    command: python manage.py runserver 0.0.0.0:8000
+    # volumenes para cambio de datos en docker compose y guardar la app completa...
+    volumes: # contenedor cualquier cambio se reflejara en el container... la imagen...
+      - .:/code
+    env_file:          # por el secret key
+      - .env
+    depends_on: # se levante el contenedor web... garantia
+      db: 
+        condition: service_healthy # el servidor esta saludable... la dependencia se cumple y arranca el server
+    restart: always
+    networks:
+      - webnet # se configura el DNS para acceso a google.. OJASO! EN MI CASO POR MI WIFI SI... sino no hace falta...
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  
+  db: # saludable cuando nos indica que la base de datos esta en arranque y lista para el contenedor web..
+    image: postgres:16 # version...
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=dj_ctl_comb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] # si devuelve true se levanto el servicio...
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      #start_period: 30s
+    networks:
+     - webnet # PARA LA IP Y DNS DE GOOGLE DEJAR FUNCIONAR... SI NO TIENE NADA NO ES NECESARIO AGREGAR...
+
+volumes: # instanciar el volumen de la base de datos... directamente..
+  pg_data:
+
+networks:
+  webnet:

@@ -1,0 +1,106 @@
+{% load socialaccount %}
+{% providers_media_js %}
+
+<div class="bs-docs-section clearfix"> <!-- bs... las columnas.. -->
+    <div class="row">
+        <div class="bs-component"> <!-- los componentes -->
+            <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Navegar</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarColor01">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <!-- <a class="nav-link active" href="{% url 'core:home' %}">Inicio !-- core es por urls.py de bases... REDIRIGIR BOTON INICIO 
+                                    <span class="visually-hidden">(current)</span>
+                                </a> ABAJO HTMX... EN HW-TARGET EXTRAE DE LA ETIQUETA BODY EN BASE.HTML... OJO!!-->
+                                <div class="nav-link" 
+                                hx-get="{% url 'core:home' %}" hx-push-url="true"
+                                hx-trigger="click"
+                                hx-target="#body"
+                                hx-swap="outerHTML"
+                                style="cursor: pointer;">
+                                Inicio
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'usuarios:registro' %}">Registro</a> <!--FALTA AGREGAR DESTINO HIPERVINCULO...-->
+                            </li>
+                            <!--<li class="nav-item">
+                                <a class="nav-link" href="#">Pricing</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">About</a>
+                            </li>-->
+                            {% if user.is_authenticated %} <!-- PARA PERMISOS... QUE NO ACCEDA CUALQUIERA, no muestra marcas... hay que logearse-->
+                                <!--NO RENDERIZE MARCAS... SIN AUTENTICAR... CON PERMISOS-->
+                            <li class="nav-item dropdown"> <!--PARA QUE MUESTRE BIEN EL DESPLIEGUE DEL MENU..-->
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                                    aria-haspopup="true" aria-expanded="false">Catalogos</a>
+                                <div class="dropdown-menu">             
+                                    <!-- en mark list que direccione le formulario, que el activador sea por click y que diriga al body...-->
+                                    <a class="dropdown-item" href="#"
+                                    hx-get="{% url 'control:mark_list' %}"
+                                    hx-trigger="click" hx-target="#body"
+                                    hx-push-url="true"
+                                    style="cursor: pointer;"
+                                    >Marcas</a>
+                                {% if perms.ctrl_comb.view_model %}
+                                    <a class="dropdown-item" href="{% url 'control:modelo_list' %}">Modelos</a> <!-- APUNTA EN URLS.PY GENERICO # era htmx...-->
+                                {% endif %} <!--ACA SERIA AUTENTICADO PARA VER CON PERMISO VIEW MODEL-->
+                                {% if perms.ctrl_comb.view_vehiculo %}  <!--PARA VER VEHICULOS PERMISO USUARIO, NO OLVIDAR LA RUTA-->
+                                    <a class="dropdown-item" href="{% url 'control:vehiculo_list' %}">Vehiculos</a>
+                                {% endif %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">Separated link</a>
+                                </div>
+                            </li>
+                            {% endif %} <!-- fin de vista, DEPENDE DE LOGEADO... dependiendo de autenticacion.. view_model... USER ES ARRIBA-->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'pages:about' %}">Acerca de...</a>
+                            </li>
+                        </ul>
+                        <div class="d-flex">
+                            {% if user.is_authenticated %}
+                            <!--<form method="post" action="{% url 'usuarios:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link" style="padding: 0;">Salir</button>
+                            </form>-->
+                            <form id="logout-form" method="post" hx-post="{% url 'usuarios:logout' %}" hx-target="#body" hx-swap="outerHTML">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link" style="padding: 0; cursor: pointer;">Salir</button>
+                            </form> <!-- POR FORMULARIO UNICAMENTE PARA QUE ACEPTE EL TOKEN CSRF PARA SALIR... SINO NO FUNCA... -->
+                            {% else %}
+                            <div class="text-info" hx-get="{% url 'usuarios:login' %}" hx-push-url="true"
+                                hx-trigger="click" hx-target="#body" style="cursor: pointer;">Login</div>&nbsp; &nbsp;
+                            <div class="text-info" hx-get="{% url 'usuarios:registro' %}" hx-push-url="true"
+                                hx-trigger="click" hx-target="#body" style="cursor: pointer;">Registro</div>&nbsp; &nbsp;
+                                <a href="{% provider_login_url 'google' %}?next=/"
+                                    class="text-info"
+                                    style="cursor: pointer;">
+                                    Google
+                                </a>
+                            <!-- <div class="text-info" hx-get="{% provider_login_url 'google' %}?next=/" hx-push-url="true"
+                                hx-trigger="click" hx-target="#body" style="cursor: pointer;">Google</div> -->
+                            <!--<a href="{% url 'usuarios:login' %}">Login</a> -->
+                            |<!--    <a href="{% url 'usuarios:registro' %}">Registro</a> --> <!-- FORMULARIO REGISTRO...-->
+                            |<!--    <a href="{% provider_login_url 'google' %}?next=/">Google</a> --> <!-- FORMULARIO GOOGLE... cuando se logea el next direcciona a home...-->
+                            {% endif %}
+                        </div>
+                       <!-- <div class="d-flex">
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'usuarios:logout' %}">Salir</a>
+                            {% else %}
+                            <a href="{% url 'usuarios:login' %}">Login</a>  PARA EL LOGIN Y LOGOUT REDIRIGE......-->
+                            <!--{% endif %} -->
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>

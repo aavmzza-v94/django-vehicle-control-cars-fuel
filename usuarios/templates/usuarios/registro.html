@@ -1,0 +1,19 @@
+{% extends "base.html" %} <!-- HERENCIA-->
+{% load crispy_forms_tags %} <!--AGREGAR PARA FORMULARIO CRISPY PARA USAR-->
+
+{% block contenido %} <!--OJASOOO!!! tiene que coincidir letra por letra contenido
+si no coincide no carga el formulario!!! OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Nuevo Usuario"%} <!--se le pasa luego al titulo EN LA PLANTILLA... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Registro de Usuario" %} <!-- pasar eso a start por variable header-->
+    <form hx-post="{% url 'usuarios:registro' %}" hx-target="#body"
+        hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+        {#% csrf_token %#} <!--TOKEN DE SEGURIDAD  ESTO ES PARA PODER LOGEARSE HINA... AUTOMATICAMENTE CON EL FORM.AS_P YA CREA...-->
+        {{ form|crispy }} <!--con crispy mucho mejor! FORMULARIO QUE VA A RENDERIZAR... por usercreationform en forms.py de usuarios-->
+    <button type="submit" class="btn btn-warning">Registrar</button> <!-- BOTON DE ENVIAR FORMULARIO...-->
+</form>
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+{% endblock %}

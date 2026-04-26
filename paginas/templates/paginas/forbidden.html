@@ -1,0 +1,23 @@
+{% extends "base.html" %} <!-- HERENCIA... RECARGA DE LA PLANTILLA BASE Y CONECTA... PARA ESTILOS Y DEMAS... -->
+
+{% block titulo %}Sin Permisos Necesarios{% endblock %} <!-- sobreescribe lo de la plantilla base... -->
+
+{% block contenido %} <!-- OJO NO SE PUEDE DUPLICAR LOS BLOQUES CON MISMO NOMBRE.... DARA ERROR en la web... -->
+
+{% include "fragments/titulo.html" with titulo="Permisos Requeridos"%} <!--se le pasa luego al titulo... del fragments...-->
+
+    {% include "fragments/card_start.html" with header="Permisos Requeridos" %} <!-- pasar eso a start por variable header-->
+      <h4 class="card-title">Tu usuario {{user}} No tiene permisos para ver Opciones</h4> <!-- Mensaje con variable de contexto user... CONTIENE NAME DE USER-->
+      <p class="card-text">Opciones:
+        <ul><li>Ir al <a href="{% url 'core:home' %}">Inicio</a></li>
+            <li>Ir al <a href="{% url 'usuarios:login' %}">Login</a> </li> <!-- list item... OJASO SOLO UNA LLAVE {} NO DOS...-->
+        </ul> <!--LISTA O MENU UL, href es para URL... palabra con hipervinculo o link.. LUEGO CREAR VISTA PARA FORBIDDEN-->
+      </p>
+    
+ <!-- BOOTSTRAP DE RED CARD DE ADVERTENCIA... HTMML... -->
+    {% include "fragments/card_finish.html" %} <!-- pasar eso a start por variable header-->
+
+<!--<div class="text-warning"> PRUEBA...
+    Aplicacion elaborada para Django
+</div>-->
+{% endblock %}

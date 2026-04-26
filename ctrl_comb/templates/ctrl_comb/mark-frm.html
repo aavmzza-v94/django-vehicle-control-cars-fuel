@@ -1,0 +1,34 @@
+<form hx-post="{% url 'control:mark_save' %}" hx-target="#list"
+class="d-flex align-item-center" method="POST">  <!-- AGREGAR ELEMENTOS DE HTMX... para post y el target apunta a la lista... en mark.html list..-->
+    <fieldset> <!-- #list devuelve la lista en mark_save por views... APUNTA A 2DA COLUMNA EN MARK.HTML... mark-list-->
+        <div class="row"> <!-- MEDIA PANTALLA POR BOOTSTRAP 6... DOS COLUMNAS UNA FILA....-->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id" class="form-label">Id</label>  <!--ETIQUETA POR EL ID...-->
+                    <input type="text" class="form-control" id="id" aria-describedby="idhelp"
+                    name="id" placeholder="id" readonly value="{{obj.id}}">
+                    <small id="idhelp" class="form-text text-muted">Id</small>
+                </div>
+                
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="descript" class="form-label">Descripcion</label>  <!--ETIQUETA POR EL ID...-->
+                    <input type="text" class="form-control" id="descript" aria-describedby="idhelp"
+                    name="descript" placeholder="Descripcion" value="{{obj.descript}}"> <!-- en name hay que pasar lo de backend ojo!!!-->
+                    <small id="descripthelp" class="form-text text-muted">Descripcion</small> <!-- NO OLVIDAR SACAR READONLY...-->
+                </div>
+            </div>
+        </div> <!-- ABAJO AQUI DEBEMOS AGREGAR LOS BOTONES DE ENVIO... o submit y boton de cancelar... EN UNA FILA...-->
+        <div class="row">
+            <div class="col-md-6"> <!-- agregar dos columnas para los botones...-->
+                <button type="submit" class="btn btn-success btn-sm">Guardar</button>  <!-- agregar boton de submit... class="btn btn-success dar formato boton de bootstrap color success.. y sm es pequenho-->
+            </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-info btn-sm"
+                hx-get="{% url 'control:mark_list' %}" hx-target="#body"
+                >Limpiar</button> <!-- boton HTMX de limpiar... a este si htmx para el GET y direccionar a otra url... reset o recargar lista-->
+            </div>
+        </div>
+    </fieldset>
+</form>

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load socialaccount %} 
+
+{% block contenido %}
+
+{% include "fragments/titulo.html" with titulo="Login" %}
+
+{% include "fragments/card_start.html" with header="Iniciar sesión" %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <button class="btn btn-primary mt-2" type="submit">
+        Acceder
+    </button>
+</form>
+
+<hr>
+
+<a class="btn btn-danger"
+   href="{% provider_login_url 'google' %}?next=/">
+   <i class="bi bi-google"></i> Ingresar con Google
+</a>
+
+{% include "fragments/card_finish.html" %}
+
+{% endblock %}

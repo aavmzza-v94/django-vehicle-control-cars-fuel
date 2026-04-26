@@ -1,0 +1,40 @@
+<!-- esta plantilla tendra una pequenha tabla que vincula a un contexto... FRONTEND PARA LA LISTA...-->
+ {% if obj %} <!-- SI OBJ ES ENVIADO....-->
+<table class="table table-striped table-hover"> <!-- id es para frontend luego.. tbl... en caso de agregar id="tbl"-->
+    <thead> <!-- CABECERA... thead es la cabecera de la tabla...-->
+        <th>ID</th>
+        <th>Descripcion</th>
+        <th>Acciones</th>
+    </thead>
+    <tbody> <!--cuerpo de la tabla...-->
+        {% for o in obj %} <!--POR CADA EVENTO EN OBJ... por cada o tendra una representacion de marca...-->
+        <tr> <!--FILA Y 3 COLUMNAS DE LA TABLA...-->
+            <td>{{o.id}}</td> <!-- AQUI ES DONDE SE PUEDE ALMACENAR Y VISUALIZAR REGISTROS DE MARCAS... POR OBJECTS-->
+            <td>{{o.descript}}</td>
+            <td> <!-- BOTON DE BOOTSTRAP EN CLASS... en delete... especificar objeto... control es url.. nomas control/..-->
+                <!-- EN DELETE SE HACE LLAMADO A LA FUNCION mark_delete por ruta en views... y ahi borra con el nembo query Y OBJETO...-->
+                <!-- el confirm crea un alert o alerta en javascript para borrar.... LOS BOTONES... BI BI.. GET ES PETICION-->
+                 <!-- el mark-edit con el get y target nos muestra en la web los datos del formulario...-->
+                <i class="bi bi-trash3"
+                style="cursor: pointer;"
+                hx-delete="{% url 'control:mark_delete' o.id %}"
+                hx-target="#list"
+                hx-confirm="Seguro que deseas eliminar el registro?"
+                ></i>
+                <i class="bi bi-pencil-square"
+                style="cursor: pointer;"
+                hx-get="{% url 'control:mark_edit' o.id %}"
+                hx-target="#frm"
+                ></i>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+ {% else %}
+    <p>No hay registros</p>
+ {% endif %}
+
+ <input type="text" class="form-control" id="id" aria-describedby="idhelp"
+name="id" placeholder="id" readonly value="{{reg.id}}"
+hx-swap-oob="true"> <!-- en name hay que pasar lo de backend ojo!!! no olvidar el swap... carga el input del id original que esta vacio-->
